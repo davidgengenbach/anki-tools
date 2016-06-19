@@ -10,9 +10,7 @@ if len(sys.argv) < 3:
 filename = sys.argv[1]
 out_folder = sys.argv[2]
 
-elements = helper.getNotesFromCSV(filename)
-
-for topic, notes in elements.iteritems():
+for topic, notes in helper.getNotesFromCSV(filename).iteritems():
     with open("{}/{}.txt".format(out_folder, topic), 'w') as file:
         for note in notes:
             file.write('"{}","{}"\n'.format(note['title'], note['content']))

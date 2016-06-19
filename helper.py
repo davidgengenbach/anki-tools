@@ -3,15 +3,13 @@ import re
 from functools import partial
 
 def sanitize(str):
-    def removeStartingOrTrailingBRs(search, replace, str):
+    def replaceStartingAndTrailing(search, replace, str):
         last = ''
         new = str
-        searchRegStart = '^' + search
-        searchRegEnd = search + '$'
         while(new != last):
             last = new
-            new = re.sub(searchRegStart, replace, last)
-            new = re.sub(searchRegEnd, replace, new)
+            new = re.sub('^' + searchRegStart, replace, last)
+            new = re.sub(searchRegEnd + '$', replace, new)
         return new
 
     sanitizers = [
@@ -21,7 +19,7 @@ def sanitize(str):
         lambda x: x.replace('<br>', '<br/>'),
         lambda x: x.replace('&nbsp;', ' '),
         lambda x: x.replace('"', '\''),
-        partial(removeStartingOrTrailingBRs, r'<br/?>', ''),
+        partial(replaceStartingAndTrailing, r'<br/?>', ''),
         lambda x: x.strip()
     ]
     return reduce(lambda acc, item: item(acc), sanitizers, str)
@@ -42,5 +40,8 @@ def getNotesFromCSV(filename):
                 continue
             if topic not in elements:
                 elements[topic] = []
-            elements[topic].append({'title': sanitize(row[0]),'content': sanitize(row[1])})
+            elements[topic].append({
+                'title': sanitize(row[0]),
+                'content': sanitize(row[1])
+            })
     return elements

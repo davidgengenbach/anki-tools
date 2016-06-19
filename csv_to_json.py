@@ -11,7 +11,5 @@ if len(sys.argv) < 3:
 filename = sys.argv[1]
 out_filename = sys.argv[2]
 
-elements = helper.getNotesFromCSV(filename)
-
 with open(out_filename, 'w') as file:
-    json.dump(elements, file)
+    json.dump(helper.getNotesFromCSV(filename), file)
