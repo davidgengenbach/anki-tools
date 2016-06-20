@@ -8,8 +8,8 @@ def sanitize(str):
         new = str
         while(new != last):
             last = new
-            new = re.sub('^' + searchRegStart, replace, last)
-            new = re.sub(searchRegEnd + '$', replace, new)
+            new = re.sub('^' + search, replace, last)
+            new = re.sub(search + '$', replace, new)
         return new
 
     sanitizers = [
