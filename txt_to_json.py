@@ -1,45 +1,28 @@
 #!/usr/bin/env python
 
-# TODO
-
 import re
 import sys
 import json
 import os
+import helper
 
-if len(sys.argv) < 2:
-    print("Usage: {} filename".format(sys.argv[0]))
+if len(sys.argv) < 3:
+    print "Usage: {} OUT.json file1.txt file2.txt".format(sys.argv[0])
     exit(1)
 
-seperator = ("-" * 100);
-filename = sys.argv[1]
-p = re.compile('"(.*)","(.*)"')
+out = sys.argv[1]
+files = sys.argv[2:]
+files_names = map(lambda x : {"txt": x, "name": helper.getFilename(x)['filenameWithoutExtension']}, files)
 
-def get_all_notes(filename):
-    count = 0;
-    elements = []
-    errors = []
-    with open(filename, 'r') as file:
-        for line in file:
-            count = count + 1
-            matched = p.search(line)
-            if not matched:
-                errors.append({"lineNr": count, "line": line})
-                continue
-            title = matched.group(1)
-            content = matched.group(2)
-            elements.append({'title': title, 'content': content})
-    return (elements, errors)
+result = []
+for file in files_names:
+    if file["name"] == "notes":
+        continue
+    (notes, errors) = helper.getNotesFromTxt(file['txt'])
+    result.append({
+        "name": file["name"],
+        "notes": notes
+    })
 
-(elements, errors) = get_all_notes(filename)
-
-if len(errors) is not 0:
-    for error in errors:
-        print "Error in Line {}: {}".format(error["lineNr"], error["line"])
-    with open(os.path.splitext(filename)[0] + '_errors.json', 'w') as file:
-        json.dump(errors, file);
-
-with open(os.path.splitext(filename)[0] + '.json', 'w') as file:
-    json.dump(elements, file);
-
-
+with open(out, 'w') as out_file:
+    json.dump(result, out_file)
