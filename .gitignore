@@ -1,4 +1,4 @@
 data
 anki-card-creator
 *.pyc
-card-viewer
+card-viewer/assets/notes.json

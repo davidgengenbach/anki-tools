@@ -1,0 +1,40 @@
+<!doctype html>
+<html class="no-js" lang="">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title></title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- bower:css -->
+    <!-- endbower -->
+    <link rel="stylesheet" href="assets/css/skeleton.css">
+    <link rel="stylesheet" href="assets/css/main.css">
+</head>
+
+<body ng-app="AnkiCardCreator" ng-controller="MainCtrl">
+    <header>
+        <input class="u-full-width" type="text" ng-model="search" placeholder="Search..."/>
+    </header>
+    <div class="holder">
+        <div class="clearfix" ng-repeat="topic in notes">
+            <h2 class="topic-title">{{topic.name}}</h2>
+            <div class="card-holder">
+                <div class="card" ng-class="{'error': !!note.error}" ng-repeat="note in topic.notes | filter:search">
+                    <span class="card-title">{{note.title}}</span>
+                    <hr/>
+                    <span ng-bind-html="note.content"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    <!-- bower:js -->
+    <script src="lib/angular/angular.js"></script>
+    <script src="lib/ramda/dist/ramda.js"></script>
+    <!-- endbower -->
+    <script src="assets/js/main.js"></script>
+</body>
+
+</html>

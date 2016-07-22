@@ -1,0 +1,21 @@
+{
+  "name": "anki-card-viewer",
+  "description": "",
+  "main": "index.js",
+  "authors": [
+    "David Gengenbach <davidgengenbach@gmx.de>"
+  ],
+  "license": "ISC",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "^1.5.7",
+    "ramda": "^0.21.0"
+  }
+}

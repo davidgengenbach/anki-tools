@@ -11,7 +11,7 @@ def getFilename(path):
     }
 
 def getNotesFromTxt(filename):
-    p = re.compile('"(.*)","(.*)"')
+    p = re.compile('"(.*)","(.*)"(\r\n)?$')
     count = 0;
     elements = []
     errors = []
@@ -45,6 +45,7 @@ def sanitize(str):
         lambda x: re.sub(r'<br.?>', '<br/>', x),
         lambda x: x.replace('&nbsp;', ' '),
         lambda x: x.replace('<br />', '<br/>'),
+        lambda x: x.replace('"', '\''),
         lambda x: re.sub(r'(?:<br ?/?>){3,}', '<br/><br/>', x),
         partial(replaceStartingAndTrailing, r'<br ?/?>', ''),
         lambda x: x.strip()
