@@ -1,94 +1,39 @@
 import csv
-import os
-import re
-from functools import partial
+import shutil
+import io
 
-def getFilename(path):
-    filename = os.path.basename(path);
-    return {
-        'filename': file,
-        'filenameWithoutExtension': os.path.splitext(filename)[0]
-    }
+csv_kwargs = dict(delimiter=',', quotechar='"')
+csv_writer_kwars = dict(quoting=csv.QUOTE_ALL, **csv_kwargs)
 
-def getNotesFromTxt(filename):
-    p = re.compile('"(.*)","(.*)"(\r\n)?$')
-    count = 0;
-    elements = []
-    errors = []
-    with open(filename, 'r') as file:
-        for line in file:
-            count = count + 1
-            matched = p.search(line)
-            if not matched:
-                errors.append({"lineNr": count, "line": line})
-                continue
-            title = matched.group(1)
-            content = matched.group(2)
-            elements.append({'title': title, 'content': content})
-    return (elements, errors)
+def get_csv(file):
+	with open(file) as f:
+		reader = csv.reader(f, **csv_kwargs)
+		return list(reader)
 
-def sanitize(str):
-    def replaceStartingAndTrailing(search, replace, str):
-        last = ''
-        new = str
-        while(new != last):
-            last = new
-            new = re.sub('^' + search, replace, last)
-            new = re.sub(search + '$', replace, new)
-        return new
+def to_csv(rows):
+    o = io.StringIO()
+    w = csv.writer(o, **csv_writer_kwars)
+    w.writerows(rows)
+    return o.getvalue().strip()
 
-    sanitizers = [
-        lambda x: x.strip(),
-        lambda x: x.replace('</div>', '<br/>'),
-        lambda x: re.sub(r'<div(.*?)>', '<br/>', x),
-        lambda x: x.replace('<br>', '<br/>'),
-        lambda x: re.sub(r'<br.?>', '<br/>', x),
-        lambda x: x.replace('&nbsp;', ' '),
-        lambda x: x.replace('<br />', '<br/>'),
-        lambda x: x.replace('"', '\''),
-        lambda x: re.sub(r'(?:<br ?/?>){3,}', '<br/><br/>', x),
-        partial(replaceStartingAndTrailing, r'<br ?/?>', ''),
-        lambda x: x.strip()
-    ]
-    return reduce(lambda acc, item: item(acc), sanitizers, str)
+def write_csv(file, rows):
+	write_file(file, to_csv(rows))
 
-def getNotesFromCSV(filename):
-    elements = {}
-    errors = []
-    count = -1;
-    with open(filename, 'r') as file:
-        reader = csv.reader(file, delimiter='\t')
-        for row in reader:
-            count = count + 1
-            # Ignore header
-            if count == 0:
-                continue
-            if len(row) != 4:
-                print '(Line: {}) Error in row - len(row) {} not right: {}'.format(count, len(row), row)
-                errors.append({
-                    'type': 'len(row) wrong',
-                    'line': count,
-                    'row': row
-                })
-                continue
-            topic = row[3]
-            if topic == '':
-                print '(Line: {}) Error in row - topic is empty: {}'.format(line, row)
-                errors.append({
-                    'type': 'topic empty',
-                    'line': count,
-                    'row': row
-                })
-                continue
-            if topic not in elements:
-                elements[topic] = []
-            elements[topic].append({
-                'title': sanitize(row[0]),
-                'content': sanitize(row[1])
-            })
-    return elements
+def backup_folder(folder, backup_folder = None):
+	name = folder.rsplit('/', 1)[-1]
+	backup_folder = '{}/{}_{}'.format(backup_folder, name, get_timestamp())
+	shutil.copytree(folder, backup_folder)
 
-def getDuplicates(elements):
-    keys = map(lambda x: x['title'], elements)
-    duplicates = set([x for x in keys if keys.count(x) > 1])
-    return duplicates
+def get_timestamp(format = "%y%m%d__%H:%M:%S"):
+	from time import gmtime, strftime
+	return strftime(format, gmtime())
+
+def linebreak_to_html(x):
+	return x.replace('//', '<br/>')
+
+def linebreak_to_txt(x):
+	return x.replace('<br/>', '//')
+
+def write_file(file, data):
+    with open(file, 'w') as f:
+        f.write(data)
