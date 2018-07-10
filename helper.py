@@ -34,6 +34,9 @@ def linebreak_to_html(x):
 def linebreak_to_txt(x):
 	return x.replace('<br/>', '//')
 
+def linebreak_to_real(x):
+	return x.replace('//', '\n').replace('<br/>', '//')
+
 def write_file(file, data):
     with open(file, 'w') as f:
         f.write(data)
