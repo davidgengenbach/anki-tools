@@ -2,3 +2,4 @@ data
 anki-card-creator
 *.pyc
 card-viewer/assets/notes.json
+.idea/

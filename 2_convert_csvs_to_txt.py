@@ -1,12 +1,9 @@
 #!/usr/bin/env python3
 
-import io
-import csv
 import helper
-from enum import Enum
-import sys
 from glob import glob
 import os
+
 
 def get_args():
     import argparse
@@ -15,6 +12,7 @@ def get_args():
     parser.add_argument('--out_folder', type=str, default='../anki')
     args = parser.parse_args()
     return args
+
 
 def main():
     args = get_args()
@@ -25,12 +23,15 @@ def main():
         lines = [convert_card_to_txt(x) for x in rows]
         helper.write_file(new_file, '\n\n'.join(lines))
 
+
 def convert_card_to_txt(row):
     row = [helper.linebreak_to_real(x) for x in row]
-    return '((\n{}\n))\n{}\n'.format(*row) 
+    return '((\n{}\n))\n{}\n'.format(*row)
+
 
 def join(x, delimiter='//'):
-    return delimiter.join(x).strip() 
+    return delimiter.join(x).strip()
+
 
 if __name__ == '__main__':
     main()

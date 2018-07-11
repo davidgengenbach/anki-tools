@@ -1,17 +1,16 @@
 #!/usr/bin/env python3
 
-import io
-import csv
 import helper
 from helper import to_csv, write_csv
 from enum import Enum
-import sys
 from glob import glob
 import os
+
 
 class ParserModes(Enum):
     FRONT = 'front'
     BACK = 'back'
+
 
 def get_args():
     import argparse
@@ -22,12 +21,14 @@ def get_args():
     args = parser.parse_args()
     return args
 
+
 def main():
     args = get_args()
     for file in glob(os.path.join(args.txt_folder, '*.txt')):
         convert_txt_to_csv(file, args.csv_folder, args.write_csv)
 
-def convert_txt_to_csv(file, csv_folder, save_to_csv = False):
+
+def convert_txt_to_csv(file, csv_folder, save_to_csv=False):
     rows = get_parsed_notes(file)
     csv = to_csv(rows)
     if save_to_csv:
@@ -35,9 +36,11 @@ def convert_txt_to_csv(file, csv_folder, save_to_csv = False):
         write_csv(os.path.join(csv_folder, filename + '.csv'), rows)
     return csv
 
+
 def get_parsed_notes(file):
     with open(file) as f:
         return parse_text(f.readlines())
+
 
 def parse_text(lines, front_delimiter='((', back_delimiter='))'):
     all_lines = []
@@ -53,20 +56,13 @@ def parse_text(lines, front_delimiter='((', back_delimiter='))'):
         elif line.startswith(back_delimiter):
             mode = ParserModes.BACK
         assert mode is not None
-        line = clean_line(line, [front_delimiter, back_delimiter])
+        line = helper.clean_line(line, [front_delimiter, back_delimiter])
         if line != '':
             current[mode].append(line)
     if current is not None:
         all_lines.append(current)
-    return [(join(line[ParserModes.FRONT]), join(line[ParserModes.BACK])) for line in all_lines]
+    return [(helper.join(line[ParserModes.FRONT]), helper.join(line[ParserModes.BACK])) for line in all_lines]
 
-def clean_line(x, remove_chars=[]):
-    for y in remove_chars:
-        x = x.replace(y, '')
-    return x.strip()
-
-def join(x, delimiter='//'):
-    return delimiter.join(x).strip() 
 
 if __name__ == '__main__':
     main()
