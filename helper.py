@@ -40,3 +40,9 @@ def linebreak_to_real(x):
 def write_file(file, data):
     with open(file, 'w') as f:
         f.write(data)
+
+def get_filename(file, with_extension=True):
+	filename = file.rsplit('/', 1)[1]
+	if not with_extension:
+		filename = filename.rsplit('.', 1)[0]
+	return filename

@@ -14,7 +14,8 @@ def get_args():
     default_db_path = os.path.join(os.path.expanduser("~"), '.local/share/Anki2/User 1/collection.anki2')
     parser = argparse.ArgumentParser(description='Import Anki cards from sqlite3 database')
     parser.add_argument('--db_path', type=str, default=default_db_path)
-    parser.add_argument('--out_folder', type=str, default='../anki')
+    parser.add_argument('--backup_folder_src', type=str, default='../anki')
+    parser.add_argument('--csv_folder', type=str, default='../anki/csv')
     parser.add_argument('--backup_folder', type=str, default='../anki_backup')
     args = parser.parse_args()
     return args
@@ -22,7 +23,7 @@ def get_args():
 def main():
     args = get_args()
 
-    if not np.all([os.path.exists(x) for x in [args.db_path, args.out_folder, args.backup_folder]]):
+    if not np.all([os.path.exists(x) for x in [args.db_path, args.csv_folder, args.backup_folder]]):
         print('Invalid paths!')
         sys.exit(1)
 
@@ -36,14 +37,14 @@ def main():
         print('ABORTING')
         sys.exit(1)
    
-    backup_folder(args.out_folder, backup_folder = args.backup_folder)
+    backup_folder(args.backup_folder_src, backup_folder = args.backup_folder)
 
     cards_per_deck = defaultdict(list)
     for front, back, deck in rows:
         cards_per_deck[deck].append((front, back))
 
     for deck, cards in cards_per_deck.items():
-        filename = os.path.join(args.out_folder, '{}.csv'.format(deck))
+        filename = os.path.join(args.csv_folder, '{}.csv'.format(deck))
         write_csv(filename, [(linebreak_to_txt(front), linebreak_to_txt(back)) for front, back in cards])
 
 def get_cards(conn):
