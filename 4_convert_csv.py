@@ -2,7 +2,7 @@
 
 from glob import glob
 import os
-from helper import get_csv, write_csv, linebreak_to_html
+from helper import get_csv, write_csv, linebreak_to_html, get_filename, remove_file
 
 
 def get_args():
@@ -19,13 +19,13 @@ def main():
     os.makedirs(args.csv_converted_folder, exist_ok=True)
     files = glob(os.path.join(args.csv_folder, '*.csv'))
     for file in files:
-        name = file.rsplit('/')[-1].rsplit('.', 1)[0]
+        name = get_filename(file, with_extension=False)
         print(name)
         new_filename = os.path.join(args.csv_converted_folder, name + '.csv')
         lines = get_csv(file)
         if not rows_are_valid(lines):
             print('\t (Skipping)')
-            if os.path.exists(new_filename): os.unlink(new_filename)
+            remove_file(new_filename)
             continue
         converted_lines = list(map(convert_line, lines))
         write_csv(new_filename, converted_lines)

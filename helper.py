@@ -51,6 +51,9 @@ def write_file(file, data):
     with open(file, 'w') as f:
         f.write(data)
 
+def remove_file(file):
+    if os.path.exists(file):
+        os.unlink(file)
 
 def get_filename(file, with_extension=True):
     filename = file.rsplit('/', 1)[1]

@@ -24,7 +24,8 @@ def get_args():
 
 def main():
     args = get_args()
-    for file in glob(os.path.join(args.txt_folder, '*.txt')):
+    txt_files = glob(os.path.join(args.txt_folder, '*.txt'))
+    for file in txt_files:
         convert_txt_to_csv(file, args.csv_folder, args.write_csv)
 
 
@@ -32,8 +33,8 @@ def convert_txt_to_csv(file, csv_folder, save_to_csv=False):
     rows = get_parsed_notes(file)
     csv = to_csv(rows)
     if save_to_csv:
-        filename = helper.get_filename(file, False)
-        write_csv(os.path.join(csv_folder, filename + '.csv'), rows)
+        filename = helper.get_filename(file, with_extension=False) + '.csv'
+        write_csv(os.path.join(csv_folder, filename), rows)
     return csv
 
 

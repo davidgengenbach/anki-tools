@@ -9,7 +9,7 @@ def get_args():
     import argparse
     parser = argparse.ArgumentParser(description='Converts CSV files to txt')
     parser.add_argument('--csv_folder', type=str, default='../anki/csv')
-    parser.add_argument('--out_folder', type=str, default='../anki')
+    parser.add_argument('--txt_folder', type=str, default='../anki')
     args = parser.parse_args()
     return args
 
@@ -18,7 +18,7 @@ def main():
     args = get_args()
     files = glob(os.path.join(args.csv_folder, '*.csv'))
     for file in files:
-        new_file = os.path.join(args.out_folder, helper.get_filename(file, False) + '.txt')
+        new_file = os.path.join(args.txt_folder, helper.get_filename(file, False) + '.txt')
         rows = helper.get_csv(file)
         lines = [convert_card_to_txt(x) for x in rows]
         helper.write_file(new_file, '\n\n'.join(lines))

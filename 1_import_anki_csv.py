@@ -28,12 +28,12 @@ def main():
         sys.exit(1)
 
     conn = sqlite3.connect(args.db_path)
-    rows = get_cards(conn)
 
+    rows = get_cards(conn)
     header, rows = rows[0], rows[1:]
 
     if not rows_valid(rows):
-        print('ABORTING')
+        sys.stderr.write('ABORTING\n')
         sys.exit(1)
 
     backup_folder(args.backup_folder_src, backup_folder=args.backup_folder)
@@ -44,16 +44,15 @@ def main():
 
     for deck, cards in cards_per_deck.items():
         filename = os.path.join(args.csv_folder, '{}.csv'.format(deck))
-        write_csv(filename, [(linebreak_to_txt(front), linebreak_to_txt(back)) for front, back in cards])
+        write_csv(filename, rows)
 
 
 def get_cards(conn):
     id_2_name = get_deck_id_2_deck_name(conn)
     cards = []
-    for id_, flds in get_notes(conn):
-        front, back = split_field(flds)
-        front, back = linebreak_to_txt(front), linebreak_to_txt(back)
-        did = get_deck_id_from_card(conn, id_)
+
+    for did, id_, flds in get_notes(conn):
+        front, back = [linebreak_to_txt(x) for x in split_field(flds)]
         assert (did is not None)
         assert (did in id_2_name.keys())
         deck = id_2_name[did]
@@ -83,11 +82,11 @@ def get_deck_id_2_deck_name(conn):
 
 
 def get_notes(conn):
-    return conn.cursor().execute('SELECT id, flds FROM notes')
-
-
-def get_deck_id_from_card(conn, id_):
-    return conn.cursor().execute('SELECT did FROM cards WHERE nid = ' + str(id_)).fetchone()[0]
+    return conn.cursor().execute('''
+      SELECT cards.did, notes.id, notes.flds
+      FROM notes
+      INNER JOIN cards on cards.nid = notes.id
+    '''.strip())
 
 
 def split_field(x):
