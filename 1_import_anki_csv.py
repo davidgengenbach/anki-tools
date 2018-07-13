@@ -44,13 +44,12 @@ def main():
 
     for deck, cards in cards_per_deck.items():
         filename = os.path.join(args.csv_folder, '{}.csv'.format(deck))
-        write_csv(filename, rows)
+        write_csv(filename, cards)
 
 
 def get_cards(conn):
     id_2_name = get_deck_id_2_deck_name(conn)
     cards = []
-
     for did, id_, flds in get_notes(conn):
         front, back = [linebreak_to_txt(x) for x in split_field(flds)]
         assert (did is not None)

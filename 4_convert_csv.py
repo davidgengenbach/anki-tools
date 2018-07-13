@@ -36,11 +36,13 @@ def rows_are_valid(rows):
     valid = True
     for idx, line in enumerate(rows):
         for field in line:
+            if field.count('IMAGE') != 0:
+                print('\t Line: {}: IMAGE'.format(idx + 1))
             if field.count('\n') != 0:
                 valid = False
                 print('\t Line {}: has line-break'.format(idx + 1))
-        if 'TDB' in line or 'TBD' in line:
-            print('\t Line {:4}: TBD ("{}")'.format(idx + 1, line[0]))
+            if 'TDB' in field or 'TBD' in field or '???' in field:
+                print('\t Line {:4}: TBD ("{}")'.format(idx + 1, line[0]))
         if len(line) != 2:
             valid = False
             print('\t Line {}: wrong field count {}'.format(idx + 1, len(line), line))
