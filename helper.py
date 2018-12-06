@@ -2,6 +2,7 @@ import csv
 import shutil
 import io
 import os
+import re
 
 csv_kwargs = dict(delimiter=',', quotechar='"')
 csv_writer_kwars = dict(quoting=csv.QUOTE_ALL, **csv_kwargs)
@@ -40,11 +41,19 @@ def linebreak_to_html(x):
 
 
 def linebreak_to_txt(x):
-    return x.replace('<br/>', '//').replace('<br>', '')
-
+    return replace(x, [
+            ('<br/>', '//'),
+            ('<br>', '//'),
+            ('<br />', '//')
+        ])
 
 def linebreak_to_real(x):
-    return x.replace('//', '\n').replace('<br/>', '//')
+    return replace(x, [
+        ('//', '\n'),
+        ('<br/>', '\n'),
+        ('<br>', '\n'),
+        ('<br />', '\n')
+    ])
 
 
 def write_file(file, data):
@@ -62,14 +71,43 @@ def get_filename(file, with_extension=True):
     return filename
 
 
-def clean_line(x, remove_chars):
-    for y in remove_chars:
-        x = x.replace(y, '')
-    return x.strip()
+def replace(x, replacements):
+    for replacement in replacements:
+        if len(replacement) == 0:
+            replacement = (replacement, '')
+        a, b = replacement
+        x = x.replace(a, b)
+    return x
+
+
+def remove_trailing_linebreaks(x):
+    return re.sub(r'(\/{2})+$', '', x)
 
 
 def join(x, delimiter='//'):
     return delimiter.join(x).strip()
 
+
 def get_default_db_path():
     return os.path.join(os.path.expanduser("~"), '.local/share/Anki2/User 1/collection.anki2')
+
+
+def txt_lines_to_csv(x):
+    fns = [
+        join,
+        remove_trailing_linebreaks,
+        lambda x: x.replace('[[', '<b>').replace(']]', '</b>') 
+    ]
+    for fn in fns: x = fn(x)
+    return x
+
+
+def csv_line_to_txt(x):
+    fns = [
+        linebreak_to_real,
+        lambda x: x.replace('<div>', '\n').replace('</div>', '\n'), 
+        lambda x: x.replace('<b>', '[[').replace('</b>', ']]') 
+    ]
+    for fn in fns: x = [fn(y) for y in x]
+    x = '((\n{}\n))\n{}\n'.format(*x)
+    return x

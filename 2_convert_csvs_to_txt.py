@@ -20,13 +20,8 @@ def main():
     for file in files:
         new_file = os.path.join(args.txt_folder, helper.get_filename(file, False) + '.txt')
         rows = helper.get_csv(file)
-        lines = [convert_card_to_txt(x) for x in rows]
+        lines = [helper.csv_line_to_txt(x) for x in rows]
         helper.write_file(new_file, '\n\n'.join(lines))
-
-
-def convert_card_to_txt(row):
-    row = [helper.linebreak_to_real(x) for x in row]
-    return '((\n{}\n))\n{}\n'.format(*row)
 
 
 def join(x, delimiter='//'):
