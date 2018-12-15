@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
-while inotifywait -e close_write ../anki/*.txt; do
-	./s_export.sh;
+./s_export.sh
+
+while inotifywait --quiet --event close_write ../anki/*.txt; do
+  echo '#####################################################'
+	./s_export.sh
 done
