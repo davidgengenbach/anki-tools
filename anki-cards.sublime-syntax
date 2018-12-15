@@ -1,0 +1,21 @@
+%YAML 1.2
+---
+name: "Anki Cards"
+file_extensions:
+  - anki.txt
+scope: text.anki-cards
+
+contexts:
+  main:
+    - include: keywords
+
+  keywords:
+    - match: '(\(\()'
+      scope: comment.line
+      push: question
+
+  question:
+    - meta_scope: string.quoted
+    - match: '(\)\))'
+      scope: comment.line
+      pop: true

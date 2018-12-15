@@ -18,7 +18,7 @@ def main():
     args = get_args()
     files = glob(os.path.join(args.csv_folder, '*.csv'))
     for file in files:
-        new_file = os.path.join(args.txt_folder, helper.get_filename(file, False) + '.txt')
+        new_file = os.path.join(args.txt_folder, helper.get_filename(file, False) + '.anki.txt')
         rows = helper.get_csv(file)
         lines = [helper.csv_line_to_txt(x) for x in rows]
         helper.write_file(new_file, '\n\n'.join(lines))
