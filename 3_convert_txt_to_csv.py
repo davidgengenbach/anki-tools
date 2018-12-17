@@ -58,10 +58,11 @@ def parse_text(lines, front_delimiter='((', back_delimiter='))'):
         elif line.startswith(back_delimiter):
             mode = ParserModes.BACK
         assert mode is not None
-        line = helper.replace(line, [front_delimiter, back_delimiter]).strip()
-        if line == front_delimiter or line == back_delimiter:
-            continue
-        current[mode].append(line.strip())
+
+        line_cleaned = helper.replace(line, [front_delimiter, back_delimiter]).strip()
+        current[mode].append(line_cleaned.strip())
+        if line.startswith(front_delimiter) and line.endswith(back_delimiter):
+            mode = ParserModes.BACK
     
     if current is not None:
         all_lines.append(current)

@@ -106,12 +106,14 @@ def txt_lines_to_csv(x):
     return x
 
 
-def csv_line_to_txt(x):
+def csv_line_to_txt(x, prefer_oneline_front = False):
     fns = [
         linebreak_to_real,
         lambda x: x.replace('<div>', '\n').replace('</div>', '\n'), 
         lambda x: x.replace('<b>', '[[').replace('</b>', ']]') 
     ]
     for fn in fns: x = [fn(y) for y in x]
-    x = '((\n{}\n))\n{}\n'.format(*x)
+    if not prefer_oneline_front or x[0].count('\n') != 0:
+        x[0] = '\n{}\n'.format(x[0])
+    x = '(({}))\n{}\n'.format(*x)
     return x
