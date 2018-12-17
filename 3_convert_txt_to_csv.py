@@ -58,14 +58,13 @@ def parse_text(lines, front_delimiter='((', back_delimiter='))'):
         elif line.startswith(back_delimiter):
             mode = ParserModes.BACK
         assert mode is not None
-        line = helper.replace(line, [front_delimiter, back_delimiter])
+        line = helper.replace(line, [front_delimiter, back_delimiter]).strip()
         if line == front_delimiter or line == back_delimiter:
             continue
         current[mode].append(line.strip())
     
     if current is not None:
         all_lines.append(current)
-
     return [(helper.txt_lines_to_csv(line[ParserModes.FRONT]), helper.txt_lines_to_csv(line[ParserModes.BACK])) for line in all_lines]
 
 

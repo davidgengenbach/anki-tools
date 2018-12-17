@@ -73,7 +73,7 @@ def get_filename(file, with_extension=True):
 
 def replace(x, replacements):
     for replacement in replacements:
-        if len(replacement) == 0:
+        if not isinstance(replacement, tuple):
             replacement = (replacement, '')
         a, b = replacement
         x = x.replace(a, b)
@@ -82,6 +82,9 @@ def replace(x, replacements):
 
 def remove_trailing_linebreaks(x):
     return re.sub(r'(\/{2})+$', '', x)
+
+def remove_preceding_linebreaks(x):
+    return re.sub(r'(^\/{2})+', '', x)
 
 
 def join(x, delimiter='//'):
@@ -95,6 +98,7 @@ def get_default_db_path():
 def txt_lines_to_csv(x):
     fns = [
         join,
+        remove_preceding_linebreaks,
         remove_trailing_linebreaks,
         lambda x: x.replace('[[', '<b>').replace(']]', '</b>') 
     ]
