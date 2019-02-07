@@ -100,7 +100,8 @@ def txt_lines_to_csv(x):
         join,
         remove_preceding_linebreaks,
         remove_trailing_linebreaks,
-        lambda x: x.replace('[[', '<b>').replace(']]', '</b>') 
+        lambda x: x.replace('[[', '<b>').replace(']]', '</b>'),
+        lambda x: re.sub(r'\$\$(.+?)\$\$', r'[$]\g<1>[/$]', x)
     ]
     for fn in fns: x = fn(x)
     return x
